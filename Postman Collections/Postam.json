@@ -1,0 +1,636 @@
+{
+	"info": {
+		"_postman_id": "21df4c82-68b5-484f-a50d-ddf8cf64d18f",
+		"name": "postProperty",
+		"description": "investment",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "investment",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "935be979-2611-4a66-a875-84d03133914b",
+						"exec": [
+							"var counters = [];\r",
+							"var arrays = [];\r",
+							"var params = [];\r",
+							"//var tesst = _.map(pm.environment.toObject());\r",
+							"//console.log(tesst)\r",
+							"\r",
+							"function cleanup() {\r",
+							"    const clean = _.keys(pm.environment.toObject())\r",
+							"    _.each(clean, (arrItem) => {\r",
+							"        if (arrItem.startsWith(\"counter\")) {\r",
+							"            //pm.environment.unset(arrItem);\r",
+							"            counters.push(arrItem);\r",
+							"        }\r",
+							"        if(arrItem.endsWith(\"A\")){\r",
+							"            arrays.push(arrItem);\r",
+							"        }\r",
+							"    })\r",
+							"    const unclean = _.keys(pm.globals.toObject())\r",
+							"    _.each(unclean, (arItem) => {\r",
+							"        params.push(arItem);\r",
+							"    })\r",
+							"};\r",
+							"\r",
+							"cleanup();\r",
+							"//console.log(counters);\r",
+							"//console.log(arrays);\r",
+							"//console.log(params);\r",
+							"//var test = JSON.parse(pm.environment.get(arrays[1]));\r",
+							"//console.log(test[0]);\r",
+							"// save global variables \r",
+							"if(params.length == 106){\r",
+							"pm.environment.set('params',params)\r",
+							"}\r",
+							"//set parameter values to value of array\r",
+							"// this gets every array and their values\r",
+							"var arrayVal = [];\r",
+							"arrays.forEach((v,i) => {\r",
+							"    var values = JSON.parse(pm.environment.get(v));\r",
+							"    arrayVal.push(values);\r",
+							"})\r",
+							"console.log(arrayVal.length);\r",
+							"// this gets every counter thier respective values\r",
+							"var counterVal = [];\r",
+							"counters.forEach((v) =>{\r",
+							"    var values = parseInt(pm.environment.get(v));\r",
+							"    counterVal.push(values);\r",
+							"})\r",
+							"\r",
+							"for( var index = 0 ; index < arrays.length ; index++ ){\r",
+							"    if(counterVal[index] < arrayVal[index].length){\r",
+							"        pm.environment.set(counters[index], counterVal[index]+1);\r",
+							"        pm.globals.set(params[index],arrayVal[index][counterVal[index]]);\r",
+							"        console.log(arrayVal[index][counterVal[index]]);\r",
+							"            if(index > 3){\r",
+							"                console.log(counterVal[index])\r",
+							"            }\r",
+							"        console.log(arrayVal[index]+\"array\");\r",
+							"\r",
+							"        break;\r",
+							"        \r",
+							"    }\r",
+							"    else{\r",
+							"        pm.environment.set(counters[index], 0);\r",
+							"        pm.environment.set(counters[index+1], counterVal[index+1]+1);\r",
+							"    }\r",
+							"}\r",
+							"//disable parameters if global value is empty\r",
+							"params.forEach((v) =>{\r",
+							"    var untest = pm.globals.get(v)\r",
+							"    if(!untest){\r",
+							"        pm.request.url.query.remove(v);\r",
+							"    }\r",
+							"    //console.log(untest)\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "71a5e183-0e3c-4a9b-9984-52b8a5c3f787",
+						"exec": [
+							"var counters = [];\r",
+							"var arrays = [];\r",
+							"\r",
+							"\r",
+							"function cleanup() {\r",
+							"    const clean = _.keys(pm.environment.toObject())\r",
+							"    _.each(clean, (arrItem) => {\r",
+							"        if (arrItem.startsWith(\"counter\")) {\r",
+							"            //pm.environment.unset(arrItem);\r",
+							"            counters.push(arrItem);\r",
+							"        }\r",
+							"        if(arrItem.endsWith(\"A\")){\r",
+							"            arrays.push(arrItem);\r",
+							"        }\r",
+							"    })\r",
+							"};\r",
+							"\r",
+							"cleanup();\r",
+							"var last = parseInt(pm.environment.get(counters[counters.length - 1 ]))\r",
+							"var lastA = JSON.parse(pm.environment.get(arrays[arrays.length  - 1 ]));\r",
+							"// if last counter is longer than the length of the last array\r",
+							"if(last < lastA.length){\r",
+							"           // The opts for the server, also includes the data to be written to file\r",
+							"let opts = {\r",
+							"    requestName : request.url,\r",
+							"    responseData : JSON.parse(pm.response.text()),\r",
+							"};\r",
+							"\r",
+							"    function SendRequest() {\r",
+							"        return new Promise(resolve => {\r",
+							"            pm.sendRequest({\r",
+							"            url:'http://localhost:3000/write',\r",
+							"            method: 'POST',\r",
+							"            header: 'Content-Type:application/json',\r",
+							"            body: {\r",
+							"                mode: 'raw',\r",
+							"                raw: JSON.stringify(opts),\r",
+							"            }\r",
+							"    }, function (err, res) {\r",
+							"       if (err) {\r",
+							"                console.log(err);\r",
+							"                reject();\r",
+							"            } else {\r",
+							"                resolve();\r",
+							"\r",
+							"            }\r",
+							"    })\r",
+							"\r",
+							"}\r",
+							");\r",
+							"};\r",
+							"SendRequest().then(postman.setNextRequest('investment'));\r",
+							"\r",
+							"async function SenReq() {\r",
+							"    return await SendRequest();\r",
+							"}\r",
+							"\r",
+							"    console.log('repeat')\r",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"_postman_id": "f38cb54d-2fb3-4d69-822f-c350a2fe8619",
+			"protocolProfileBehavior": {
+				"disableUrlEncoding": false,
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://development.investmentdominator.com/rei-crm/crm-0000X/my/api/property_post.php?key=2b666ce213e9c55b3037c08dbbef23c0&p_type={{p_type}}&p_status={{p_status}}&or_fname={{or_fname}}&or_lname={{or_lname}}&o_fname={{o_fname}}&o_lname={{o_lname}}&o_2fname={{o_2fname}}&o_2lname={{o_2lname}}&o_3fname={{o_3fname}}&o_3lname={{o_3lname}}&o_5fname={{o_5fname}}&o_5lname={{o_5lname}}&o_type={{o_type}}&o_company={{o_company}}&or_email={{or_email}}&or_fax={{or_fax}}&or_phone={{or_phone}}&or_secondary2={{or_secondary2}}&m_address={{m_address}}&m_address2={{m_address2}}&m_city={{m_city}}&m_state={{m_state}}&m_zip={{m_zip}}&p_apn={{p_apn}}&p_county={{p_county}}&p_address={{p_address}}&p_city={{p_city}}&p_state={{p_state}}&p_zip={{p_zip}}&p_beds={{p_beds}}&p_baths={{p_baths}}&p_occupancy={{p_occupancy}}&p_rent_value={{p_rent_value}}&p_short_legal={{p_short_legal}}&p_legal_description={{p_legal_description}}&p_acres={{p_acres}}&p_sqft={{p_sqft}}&p_average_dimensions={{p_average_dimensions}}&p_terrain={{p_terrain}}&p_zoning={{p_zoning}}&p_base_tax={{p_base_tax}}&p_hoa={{p_hoa}}&p_liens={{p_liens}}&p_backtaxes={{p_backtaxes}}&p_assessed_value={{p_assessed_value}}&p_market_value={{p_market_value}}&p_repair_estimate={{p_repair_estimate}}&p_improvements={{p_improvements}}&p_power={{p_power}}&p_access={{p_access}}&p_situation={{p_situation}}&p_urgency={{p_urgency}}&p_foreclosure={{p_foreclosure}}&p_repairs={{p_repairs}}&p_vandalized={{p_vandalized}}&p_water_damage={{p_water_damage}}&p_owned={{p_owned}}&p_aquired={{p_aquired}}&p_est_value={{p_est_value}}&p_min_acceptable_offer={{p_min_acceptable_offer}}&p_comments={{p_comments}}&p_close_notes={{p_close_notes}}&p_seller_agent_name={{p_seller_agent_name}}&p_seller_agent_phone={{p_seller_agent_phone}}&p_offer_accepts_date={{p_offer_accepts_date}}&p_offer_expires_date={{p_offer_expires_date}}&p_price={{p_price}}&p_listing_status={{p_listing_status}}&p_headline={{p_headline}}&p_sub_headline={{p_sub_headline}}&p_description={{p_description}}&p_plat_map_link={{p_plat_map_link}}&p_average_temperature={{p_average_temperature}}&p_sale_price={{p_sale_price}}&p_agent_name={{p_agent_name}}&p_agent_phone={{p_agent_phone}}&p_purchased_on={{p_purchased_on}}&p_purchase_amount={{p_purchase_amount}}&p_purchase_closing_costs={{p_purchase_closing_costs}}&p_sold_on={{p_sold_on}}&p_sold_amount={{p_sold_amount}}&p_sold_closing_costs={{p_sold_closing_costs}}&p_use={{p_use}}&p_use_code={{p_use_code}}&p_impact_fee={{p_impact_fee}}&p_use_description={{p_use_description}}&p_environmental={{p_environmental}}&p_restrictions={{p_restrictions}}&p_waste_system_requirement={{p_waste_system_requirement}}&p_flood={{p_flood}}&p_water_system_requirement={{p_water_system_requirement}}&p_flood_description={{p_flood_description}}&p_directions={{p_directions}}&p_listing_financing_offered={{p_listing_financing_offered}}&p_listing_finance_instrument={{p_listing_finance_instrument}}&p_listing_downpayment={{p_listing_downpayment}}&p_listing_term={{p_listing_term}}&p_listing_payment={{p_listing_payment}}&p_listing_rate={{p_listing_rate}}&p_listing_order_link={{p_listing_order_link}}&p_listing_order_post_vars={{p_listing_order_post_vars}}&p_video={{p_video}}&p_highlighted={{p_highlighted}}&tag_ids={{tag_ids}}",
+					"protocol": "https",
+					"host": [
+						"development",
+						"investmentdominator",
+						"com"
+					],
+					"path": [
+						"rei-crm",
+						"crm-0000X",
+						"my",
+						"api",
+						"property_post.php"
+					],
+					"query": [
+						{
+							"key": "key",
+							"value": "2b666ce213e9c55b3037c08dbbef23c0"
+						},
+						{
+							"key": "p_type",
+							"value": "{{p_type}}"
+						},
+						{
+							"key": "p_status",
+							"value": "{{p_status}}"
+						},
+						{
+							"key": "or_fname",
+							"value": "{{or_fname}}"
+						},
+						{
+							"key": "or_lname",
+							"value": "{{or_lname}}"
+						},
+						{
+							"key": "o_fname",
+							"value": "{{o_fname}}"
+						},
+						{
+							"key": "o_lname",
+							"value": "{{o_lname}}"
+						},
+						{
+							"key": "o_2fname",
+							"value": "{{o_2fname}}"
+						},
+						{
+							"key": "o_2lname",
+							"value": "{{o_2lname}}"
+						},
+						{
+							"key": "o_3fname",
+							"value": "{{o_3fname}}"
+						},
+						{
+							"key": "o_3lname",
+							"value": "{{o_3lname}}"
+						},
+						{
+							"key": "o_5fname",
+							"value": "{{o_5fname}}"
+						},
+						{
+							"key": "o_5lname",
+							"value": "{{o_5lname}}"
+						},
+						{
+							"key": "o_type",
+							"value": "{{o_type}}"
+						},
+						{
+							"key": "o_company",
+							"value": "{{o_company}}"
+						},
+						{
+							"key": "or_email",
+							"value": "{{or_email}}"
+						},
+						{
+							"key": "or_fax",
+							"value": "{{or_fax}}"
+						},
+						{
+							"key": "or_phone",
+							"value": "{{or_phone}}"
+						},
+						{
+							"key": "or_secondary2",
+							"value": "{{or_secondary2}}"
+						},
+						{
+							"key": "m_address",
+							"value": "{{m_address}}"
+						},
+						{
+							"key": "m_address2",
+							"value": "{{m_address2}}"
+						},
+						{
+							"key": "m_city",
+							"value": "{{m_city}}"
+						},
+						{
+							"key": "m_state",
+							"value": "{{m_state}}"
+						},
+						{
+							"key": "m_zip",
+							"value": "{{m_zip}}"
+						},
+						{
+							"key": "p_apn",
+							"value": "{{p_apn}}"
+						},
+						{
+							"key": "p_county",
+							"value": "{{p_county}}"
+						},
+						{
+							"key": "p_address",
+							"value": "{{p_address}}"
+						},
+						{
+							"key": "p_city",
+							"value": "{{p_city}}"
+						},
+						{
+							"key": "p_state",
+							"value": "{{p_state}}"
+						},
+						{
+							"key": "p_zip",
+							"value": "{{p_zip}}"
+						},
+						{
+							"key": "p_beds",
+							"value": "{{p_beds}}"
+						},
+						{
+							"key": "p_baths",
+							"value": "{{p_baths}}"
+						},
+						{
+							"key": "p_occupancy",
+							"value": "{{p_occupancy}}"
+						},
+						{
+							"key": "p_rent_value",
+							"value": "{{p_rent_value}}"
+						},
+						{
+							"key": "p_short_legal",
+							"value": "{{p_short_legal}}"
+						},
+						{
+							"key": "p_legal_description",
+							"value": "{{p_legal_description}}"
+						},
+						{
+							"key": "p_acres",
+							"value": "{{p_acres}}"
+						},
+						{
+							"key": "p_sqft",
+							"value": "{{p_sqft}}"
+						},
+						{
+							"key": "p_average_dimensions",
+							"value": "{{p_average_dimensions}}"
+						},
+						{
+							"key": "p_terrain",
+							"value": "{{p_terrain}}"
+						},
+						{
+							"key": "p_zoning",
+							"value": "{{p_zoning}}"
+						},
+						{
+							"key": "p_base_tax",
+							"value": "{{p_base_tax}}"
+						},
+						{
+							"key": "p_hoa",
+							"value": "{{p_hoa}}"
+						},
+						{
+							"key": "p_liens",
+							"value": "{{p_liens}}"
+						},
+						{
+							"key": "p_backtaxes",
+							"value": "{{p_backtaxes}}"
+						},
+						{
+							"key": "p_assessed_value",
+							"value": "{{p_assessed_value}}"
+						},
+						{
+							"key": "p_market_value",
+							"value": "{{p_market_value}}"
+						},
+						{
+							"key": "p_repair_estimate",
+							"value": "{{p_repair_estimate}}"
+						},
+						{
+							"key": "p_improvements",
+							"value": "{{p_improvements}}"
+						},
+						{
+							"key": "p_power",
+							"value": "{{p_power}}"
+						},
+						{
+							"key": "p_access",
+							"value": "{{p_access}}"
+						},
+						{
+							"key": "p_situation",
+							"value": "{{p_situation}}"
+						},
+						{
+							"key": "p_urgency",
+							"value": "{{p_urgency}}"
+						},
+						{
+							"key": "p_foreclosure",
+							"value": "{{p_foreclosure}}"
+						},
+						{
+							"key": "p_repairs",
+							"value": "{{p_repairs}}"
+						},
+						{
+							"key": "p_vandalized",
+							"value": "{{p_vandalized}}"
+						},
+						{
+							"key": "p_water_damage",
+							"value": "{{p_water_damage}}"
+						},
+						{
+							"key": "p_owned",
+							"value": "{{p_owned}}"
+						},
+						{
+							"key": "p_aquired",
+							"value": "{{p_aquired}}"
+						},
+						{
+							"key": "p_est_value",
+							"value": "{{p_est_value}}"
+						},
+						{
+							"key": "p_min_acceptable_offer",
+							"value": "{{p_min_acceptable_offer}}"
+						},
+						{
+							"key": "p_comments",
+							"value": "{{p_comments}}"
+						},
+						{
+							"key": "p_close_notes",
+							"value": "{{p_close_notes}}"
+						},
+						{
+							"key": "p_seller_agent_name",
+							"value": "{{p_seller_agent_name}}"
+						},
+						{
+							"key": "p_seller_agent_phone",
+							"value": "{{p_seller_agent_phone}}"
+						},
+						{
+							"key": "p_offer_accepts_date",
+							"value": "{{p_offer_accepts_date}}"
+						},
+						{
+							"key": "p_offer_expires_date",
+							"value": "{{p_offer_expires_date}}"
+						},
+						{
+							"key": "p_price",
+							"value": "{{p_price}}"
+						},
+						{
+							"key": "p_listing_status",
+							"value": "{{p_listing_status}}"
+						},
+						{
+							"key": "p_headline",
+							"value": "{{p_headline}}"
+						},
+						{
+							"key": "p_sub_headline",
+							"value": "{{p_sub_headline}}"
+						},
+						{
+							"key": "p_description",
+							"value": "{{p_description}}"
+						},
+						{
+							"key": "p_plat_map_link",
+							"value": "{{p_plat_map_link}}"
+						},
+						{
+							"key": "p_average_temperature",
+							"value": "{{p_average_temperature}}"
+						},
+						{
+							"key": "p_sale_price",
+							"value": "{{p_sale_price}}"
+						},
+						{
+							"key": "p_agent_name",
+							"value": "{{p_agent_name}}"
+						},
+						{
+							"key": "p_agent_phone",
+							"value": "{{p_agent_phone}}"
+						},
+						{
+							"key": "p_purchased_on",
+							"value": "{{p_purchased_on}}"
+						},
+						{
+							"key": "p_purchase_amount",
+							"value": "{{p_purchase_amount}}"
+						},
+						{
+							"key": "p_purchase_closing_costs",
+							"value": "{{p_purchase_closing_costs}}"
+						},
+						{
+							"key": "p_sold_on",
+							"value": "{{p_sold_on}}"
+						},
+						{
+							"key": "p_sold_amount",
+							"value": "{{p_sold_amount}}"
+						},
+						{
+							"key": "p_sold_closing_costs",
+							"value": "{{p_sold_closing_costs}}"
+						},
+						{
+							"key": "p_use",
+							"value": "{{p_use}}"
+						},
+						{
+							"key": "p_use_code",
+							"value": "{{p_use_code}}"
+						},
+						{
+							"key": "p_impact_fee",
+							"value": "{{p_impact_fee}}"
+						},
+						{
+							"key": "p_use_description",
+							"value": "{{p_use_description}}"
+						},
+						{
+							"key": "p_environmental",
+							"value": "{{p_environmental}}"
+						},
+						{
+							"key": "p_restrictions",
+							"value": "{{p_restrictions}}"
+						},
+						{
+							"key": "p_waste_system_requirement",
+							"value": "{{p_waste_system_requirement}}"
+						},
+						{
+							"key": "p_flood",
+							"value": "{{p_flood}}"
+						},
+						{
+							"key": "p_water_system_requirement",
+							"value": "{{p_water_system_requirement}}"
+						},
+						{
+							"key": "p_flood_description",
+							"value": "{{p_flood_description}}"
+						},
+						{
+							"key": "p_directions",
+							"value": "{{p_directions}}"
+						},
+						{
+							"key": "p_listing_financing_offered",
+							"value": "{{p_listing_financing_offered}}"
+						},
+						{
+							"key": "p_listing_finance_instrument",
+							"value": "{{p_listing_finance_instrument}}"
+						},
+						{
+							"key": "p_listing_downpayment",
+							"value": "{{p_listing_downpayment}}"
+						},
+						{
+							"key": "p_listing_term",
+							"value": "{{p_listing_term}}"
+						},
+						{
+							"key": "p_listing_payment",
+							"value": "{{p_listing_payment}}"
+						},
+						{
+							"key": "p_listing_rate",
+							"value": "{{p_listing_rate}}"
+						},
+						{
+							"key": "p_listing_order_link",
+							"value": "{{p_listing_order_link}}"
+						},
+						{
+							"key": "p_listing_order_post_vars",
+							"value": "{{p_listing_order_post_vars}}"
+						},
+						{
+							"key": "p_video",
+							"value": "{{p_video}}"
+						},
+						{
+							"key": "p_highlighted",
+							"value": "{{p_highlighted}}"
+						},
+						{
+							"key": "tag_ids",
+							"value": "{{tag_ids}}"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "06d2bb9a-e55f-431e-b124-98ce9a7c4fd8",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "99d9d036-7a45-484d-9164-35ba6cdd3c7c",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
